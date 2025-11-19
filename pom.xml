@@ -51,6 +51,13 @@
             <version>4.3.0</version>
         </dependency>
 
+        <!-- Cloudinary -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.37.0</version>
+        </dependency>
+
         <!-- JPA, Web y Validación -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
