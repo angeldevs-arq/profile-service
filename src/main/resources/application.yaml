@@ -49,9 +49,9 @@ authorization:
 
 # Cloudinary Configuration
 cloudinary:
-  cloud-name: dtxv5wnbj
-  api-key: 832795698992177
-  api-secret: vLs_IkA2eZpYQO0hgHO3ja1b9Sg
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_SECRET_KEY}
 
 # Eureka Client Configuration
 eureka:

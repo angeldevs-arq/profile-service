@@ -5,6 +5,11 @@ spring:
   application:
     name: profile-service
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/profiles?createDatabaseIfNotExist=true}
     username: ${DB_USERNAME:root}
@@ -40,6 +45,12 @@ authorization:
     secret: 14db3b405fd39d8a7434ea25d19e80eba402da04a4807ffa95114e92a140dd1c
     expiration:
       days: 7
+
+# Cloudinary Configuration
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_SECRET_KEY}
 
 # Eureka Client Configuration
 eureka:
