@@ -25,15 +25,16 @@ public class ProfileResourceFromEntityAssembler {
                 entity.getId(),
                 entity.getName().firstName(),
                 entity.getName().lastName(),
-                entity.getFullName(),
                 entity.getEmail().address(),
                 entity.getAddress().street(),
                 entity.getAddress().number(),
                 entity.getAddress().city(),
                 entity.getAddress().postalCode(),
                 entity.getAddress().country(),
-                entity.getStreetAddress(),
-                entity.getType().name()
+                entity.getType().name(),
+                entity.getProfileImageUrl(),
+                entity.getProfileImagePublicId(),
+                entity.getUserId()
         );
     }
 }

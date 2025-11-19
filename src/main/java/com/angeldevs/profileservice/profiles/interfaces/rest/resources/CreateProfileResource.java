@@ -27,6 +27,9 @@ public record CreateProfileResource(
         String city,
         String postalCode,
         String country,
-        String type
+        String profileImageUrl,
+        String profileImagePublicId,
+        String type,
+        Long userId
 ) {
 }

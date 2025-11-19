@@ -27,6 +27,14 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
      */
     Optional<Profile> findByEmail(EmailAddress emailAddress);
 
+
+    /**
+     * Find profile by id
+     * @param id identifier of profile aggregate
+     * @return Optional containing the profile if found
+     */
+    Optional<Profile> findById(Long id);
+
     /**
      * Find profile by email address string
      *

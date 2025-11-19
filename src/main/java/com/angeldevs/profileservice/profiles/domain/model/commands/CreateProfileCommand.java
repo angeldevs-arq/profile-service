@@ -30,7 +30,10 @@ public record CreateProfileCommand(
         String city,
         String postalCode,
         String country,
-        ProfileType type
+        String profileImageUrl,
+        String profileImagePublicId,
+        ProfileType type,
+        Long userId
 ) {
     /**
      * Constructor with validation
@@ -47,13 +50,13 @@ public record CreateProfileCommand(
      * @throws IllegalArgumentException if required fields are null or empty
      */
     public CreateProfileCommand {
-        if (firstName == null || firstName.isBlank()) {
+        if (firstName == null) {
             throw new IllegalArgumentException("First name is required");
         }
-        if (lastName == null || lastName.isBlank()) {
+        if (lastName == null) {
             throw new IllegalArgumentException("Last name is required");
         }
-        if (email == null || email.isBlank()) {
+        if (email == null) {
             throw new IllegalArgumentException("Email is required");
         }
         if (type == null) {

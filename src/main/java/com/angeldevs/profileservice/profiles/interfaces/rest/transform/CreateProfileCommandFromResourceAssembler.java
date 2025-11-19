@@ -31,7 +31,10 @@ public class CreateProfileCommandFromResourceAssembler {
                 resource.city(),
                 resource.postalCode(),
                 resource.country(),
-                ProfileType.valueOf(resource.type())
+                resource.profileImageUrl(),
+                resource.profileImagePublicId(),
+                ProfileType.valueOf(resource.type()),
+                resource.userId()
         );
     }
 }

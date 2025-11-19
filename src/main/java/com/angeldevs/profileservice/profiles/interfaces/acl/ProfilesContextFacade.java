@@ -27,7 +27,7 @@ public interface ProfilesContextFacade {
      * @param type Profile type
      * @return Profile ID if created successfully, 0 otherwise
      */
-    Long createProfile(String firstName, String lastName, String email, String street, String number, String city, String postalCode, String country, ProfileType type);
+    Long createProfile(String firstName, String lastName, String email, String street, String number, String city, String postalCode, String country, ProfileType type, Long userId);
 
     /**
      * Create profile with minimal information
@@ -38,6 +38,8 @@ public interface ProfilesContextFacade {
      * @return Profile ID if created successfully, 0 otherwise
      */
     Long createProfile(String firstName, String lastName, String email, ProfileType type);
+
+    Long createProfile(String firstName, String lastName, String email, ProfileType type, Long userId);
 
     /**
      * Get profile ID by email address

@@ -7,9 +7,13 @@ import com.angeldevs.profileservice.profiles.domain.services.ProfileCommandServi
 import com.angeldevs.profileservice.profiles.domain.services.ProfileQueryService;
 import com.angeldevs.profileservice.profiles.interfaces.rest.resources.CreateProfileResource;
 import com.angeldevs.profileservice.profiles.interfaces.rest.resources.ProfileResource;
+import com.angeldevs.profileservice.profiles.interfaces.rest.resources.UpdateProfileResource;
 import com.angeldevs.profileservice.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.angeldevs.profileservice.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
+import com.angeldevs.profileservice.profiles.interfaces.rest.transform.UpdateProfileCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -91,6 +95,21 @@ public class ProfilesController {
         var profile = profileQueryService.handle(getProfileByEmailQuery);
         if (profile.isEmpty()) return ResponseEntity.notFound().build();
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile.get());
+        return ResponseEntity.ok(profileResource);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a profile", description = "Update a profile")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile Updated"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    public ResponseEntity<ProfileResource> updateProfile(@PathVariable Long id, @RequestBody UpdateProfileResource resource) {
+        var updatedProfileCommand = UpdateProfileCommandFromResourceAssembler.toCommandFromResource(id,resource);
+        var updatedProfile = profileCommandService.handle(updatedProfileCommand);
+        if (updatedProfile.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedProfileEntity = updatedProfile.get();
+        var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(updatedProfileEntity);
         return ResponseEntity.ok(profileResource);
     }
 

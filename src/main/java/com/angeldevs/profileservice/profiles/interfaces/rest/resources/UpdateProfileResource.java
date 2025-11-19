@@ -1,7 +1,6 @@
 package com.angeldevs.profileservice.profiles.interfaces.rest.resources;
 
-public record ProfileResource(
-        Long id,
+public record UpdateProfileResource(
         String firstName,
         String lastName,
         String email,
@@ -10,9 +9,7 @@ public record ProfileResource(
         String city,
         String postalCode,
         String country,
-        String type,
         String profileImageUrl,
         String profileImagePublicId,
-        Long userId
-) {
-}
+        String type
+){}

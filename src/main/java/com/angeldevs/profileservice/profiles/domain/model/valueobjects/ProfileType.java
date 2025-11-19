@@ -5,5 +5,6 @@ package com.angeldevs.profileservice.profiles.domain.model.valueobjects;
  */
 public enum ProfileType {
     ORGANIZER,
-    HOSTER
+    HOST,
+    NONE
 }

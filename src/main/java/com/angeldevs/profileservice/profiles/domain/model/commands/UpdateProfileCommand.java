@@ -1,6 +1,8 @@
-package com.angeldevs.profileservice.profiles.interfaces.rest.resources;
+package com.angeldevs.profileservice.profiles.domain.model.commands;
 
-public record ProfileResource(
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.ProfileType;
+
+public record UpdateProfileCommand(
         Long id,
         String firstName,
         String lastName,
@@ -10,9 +12,7 @@ public record ProfileResource(
         String city,
         String postalCode,
         String country,
-        String type,
         String profileImageUrl,
         String profileImagePublicId,
-        Long userId
-) {
+        ProfileType type) {
 }

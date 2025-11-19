@@ -1,6 +1,8 @@
 package com.angeldevs.profileservice.profiles.domain.services;
 
+import com.angeldevs.profileservice.profiles.domain.model.aggregates.Profile;
 import com.angeldevs.profileservice.profiles.domain.model.commands.CreateProfileCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.UpdateProfileCommand;
 
 import java.util.Optional;
 
@@ -22,4 +24,6 @@ public interface ProfileCommandService {
      * @return Optional containing the created profile ID if successful
      */
     Optional<Long> handle(CreateProfileCommand command);
+
+    Optional<Profile> handle(UpdateProfileCommand command);
 }

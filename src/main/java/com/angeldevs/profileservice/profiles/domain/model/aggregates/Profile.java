@@ -50,6 +50,12 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     })
     private StreetAddress address;
 
+    private String profileImageUrl;
+
+    private String profileImagePublicId;
+
+    private Long userId;
+
     public Profile() {
         // Required by JPA
     }
@@ -65,6 +71,9 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
         this.email = new EmailAddress(command.email());
         this.address = new StreetAddress(command.street(), command.number(),
                 command.city(), command.postalCode(), command.country());
+        this.profileImageUrl = command.profileImageUrl();
+        this.profileImagePublicId = command.profileImagePublicId();
+        this.userId = command.userId();
         this.type = command.type();
     }
 
@@ -81,13 +90,16 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
      * @param country Country
      */
     public Profile(String firstName, String lastName, String email, String street,
-                   String number, String city, String postalCode, String country,
+                   String number, String city, String postalCode, String country,String profileImageUrl,
+                   String profileImagePublicId,
                    ProfileType type) {
         this();
         this.name = new PersonName(firstName, lastName);
         this.email = new EmailAddress(email);
         this.address = new StreetAddress(street, number, city, postalCode, country);
         this.type = type;
+        this.profileImageUrl = profileImageUrl;
+        this.profileImagePublicId = profileImagePublicId;
     }
 
     /**
@@ -104,10 +116,20 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
      * @return Updated profile
      */
     public Profile updateInformation(String firstName, String lastName, String email, String street,
-                                     String number, String city, String postalCode, String country) {
+                                     String number, String city, String postalCode, String country, String profileImageUrl, String profileImagePublicId,ProfileType newType) {
+
+        if(this.type != ProfileType.NONE && this.type != newType){
+            throw new IllegalStateException("No se puede cambiar el tipo de perfil si ya es ORGANIZER o HOST.");
+        }
+        if(this.type == ProfileType.NONE && newType == ProfileType.NONE){
+            throw new IllegalArgumentException("Debe seleccionar un tipo de Perfil ORGANIZER o HOST");
+        }
         this.name = new PersonName(firstName, lastName);
         this.email = new EmailAddress(email);
         this.address = new StreetAddress(street, number, city, postalCode, country);
+        this.type = newType;
+        this.profileImageUrl = profileImageUrl;
+        this.profileImagePublicId = profileImagePublicId;
         return this;
     }
 
