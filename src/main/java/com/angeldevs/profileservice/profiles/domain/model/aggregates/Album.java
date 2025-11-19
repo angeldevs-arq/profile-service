@@ -1,5 +1,6 @@
 package com.angeldevs.profileservice.profiles.domain.model.aggregates;
 
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.Photo;
 import com.angeldevs.profileservice.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,8 +31,7 @@ public class Album extends AuditableAbstractAggregateRoot<Album> {
 
     @ElementCollection
     @CollectionTable(name = "album_photos", joinColumns = @JoinColumn(name = "album_id"))
-    @Column(name = "photo_url", nullable = false, length = 1024)
-    private List<String> photos = new ArrayList<>();
+    private List<Photo> photos = new ArrayList<>();
 
     protected Album() {
         // Required by JPA
@@ -45,7 +45,7 @@ public class Album extends AuditableAbstractAggregateRoot<Album> {
      * @param description album description
      * @param photos list of photo URLs
      */
-    public Album(Profile profile, String title, String description, List<String> photos) {
+    public Album(Profile profile, String title, String description, List<Photo> photos) {
         this();
         this.profile = profile;
         this.title = title;
@@ -66,7 +66,7 @@ public class Album extends AuditableAbstractAggregateRoot<Album> {
      * @param photos list of photo URLs
      * @return updated album
      */
-    public Album update(String title, String description, List<String> photos) {
+    public Album update(String title, String description, List<Photo> photos) {
         this.title = title;
         this.description = description;
         if (photos != null) {
@@ -77,5 +77,16 @@ public class Album extends AuditableAbstractAggregateRoot<Album> {
             this.photos.addAll(photos);
         }
         return this;
+    }
+
+    public void addPhoto(String url, String publicId) {
+        if (this.photos.size() >= MAX_PHOTOS) {
+            throw new IllegalStateException("Album already has maximum number of photos: " + MAX_PHOTOS);
+        }
+        this.photos.add(new Photo(url, publicId));
+    }
+
+    public void removePhoto(String publicId) {
+        this.photos.removeIf(p -> p.getPublicId().equals(publicId));
     }
 }

@@ -3,7 +3,10 @@ package com.angeldevs.profileservice.profiles.application.internal.commandservic
 import com.angeldevs.profileservice.profiles.domain.model.aggregates.Album;
 import com.angeldevs.profileservice.profiles.domain.model.aggregates.Profile;
 import com.angeldevs.profileservice.profiles.domain.model.commands.CreateAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.CreatePhotoInAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.DeletePhotoFromAlbumCommand;
 import com.angeldevs.profileservice.profiles.domain.model.commands.UpdateAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.Photo;
 import com.angeldevs.profileservice.profiles.domain.model.valueobjects.ProfileType;
 import com.angeldevs.profileservice.profiles.domain.services.AlbumCommandService;
 import com.angeldevs.profileservice.profiles.infrastructure.persistence.jpa.repositories.AlbumRepository;
@@ -49,5 +52,24 @@ public class AlbumCommandServiceImpl implements AlbumCommandService {
     @Override
     public void deleteById(Long albumId) {
         albumRepository.deleteById(albumId);
+    }
+
+
+    @Override
+    public void handle(CreatePhotoInAlbumCommand command) {
+        var albumOpt = albumRepository.findById(command.albumId());
+        if (albumOpt.isEmpty()) return;
+        var album = albumOpt.get();
+        album.addPhoto(command.photoUrl(),command.publicId());
+        albumRepository.save(album);
+    }
+
+    @Override
+    public void handle(DeletePhotoFromAlbumCommand command) {
+        var albumOpt = albumRepository.findById(command.albumId());
+        if (albumOpt.isEmpty()) return;
+        var album = albumOpt.get();
+        album.removePhoto(command.publicId());
+        albumRepository.save(album);
     }
 }

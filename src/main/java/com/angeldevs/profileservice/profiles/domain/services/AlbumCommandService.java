@@ -1,7 +1,10 @@
 package com.angeldevs.profileservice.profiles.domain.services;
 
 import com.angeldevs.profileservice.profiles.domain.model.commands.CreateAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.CreatePhotoInAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.DeletePhotoFromAlbumCommand;
 import com.angeldevs.profileservice.profiles.domain.model.commands.UpdateAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.Photo;
 
 import java.util.Optional;
 
@@ -31,4 +34,10 @@ public interface AlbumCommandService {
      * @param albumId album identifier
      */
     void deleteById(Long albumId);
+
+
+    //Create and Delete Photo into an album
+    void handle(CreatePhotoInAlbumCommand command);
+
+    void handle(DeletePhotoFromAlbumCommand command);
 }

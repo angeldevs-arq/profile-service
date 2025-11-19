@@ -1,6 +1,7 @@
 package com.angeldevs.profileservice.profiles.domain.model.commands;
 
 import com.angeldevs.profileservice.profiles.domain.model.aggregates.Album;
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.Photo;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @param description new description
  * @param photos list of photo URLs
  */
-public record UpdateAlbumCommand(Long albumId, String title, String description, List<String> photos) {
+public record UpdateAlbumCommand(Long albumId, String title, String description, List<Photo> photos) {
     /**
      * Validates input fields.
      *

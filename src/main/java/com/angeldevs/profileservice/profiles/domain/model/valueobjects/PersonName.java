@@ -22,10 +22,10 @@ public record PersonName(String firstName, String lastName) {
      * @throws IllegalArgumentException if firstName or lastName is null, blank, or exceeds length limits
      */
     public PersonName {
-        if (firstName == null || firstName.isBlank()) {
+        if (firstName == null) {
             throw new IllegalArgumentException("First name cannot be null or blank");
         }
-        if (lastName == null || lastName.isBlank()) {
+        if (lastName == null) {
             throw new IllegalArgumentException("Last name cannot be null or blank");
         }
         if (firstName.length() > 50) {

@@ -1,13 +1,17 @@
 package com.angeldevs.profileservice.profiles.interfaces.rest;
 
 import com.angeldevs.profileservice.profiles.domain.model.commands.CreateAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.CreatePhotoInAlbumCommand;
+import com.angeldevs.profileservice.profiles.domain.model.commands.DeletePhotoFromAlbumCommand;
 import com.angeldevs.profileservice.profiles.domain.model.commands.UpdateAlbumCommand;
 import com.angeldevs.profileservice.profiles.domain.model.queries.GetAlbumByIdQuery;
 import com.angeldevs.profileservice.profiles.domain.model.queries.GetAlbumsByProfileIdQuery;
+import com.angeldevs.profileservice.profiles.domain.model.valueobjects.Photo;
 import com.angeldevs.profileservice.profiles.domain.services.AlbumCommandService;
 import com.angeldevs.profileservice.profiles.domain.services.AlbumQueryService;
 import com.angeldevs.profileservice.profiles.interfaces.rest.resources.AlbumResource;
 import com.angeldevs.profileservice.profiles.interfaces.rest.resources.CreateAlbumResource;
+import com.angeldevs.profileservice.profiles.interfaces.rest.resources.CreatePhotoResource;
 import com.angeldevs.profileservice.profiles.interfaces.rest.transform.AlbumResourceFromEntityAssembler;
 import com.angeldevs.profileservice.profiles.interfaces.rest.transform.CreateAlbumCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,13 +22,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller for album management.
  */
 @CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
-@RequestMapping(value = "/api/v1/{profileId}/albums", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/albums", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Albums", description = "Album Management Endpoints")
 public class AlbumsController {
 
@@ -41,8 +46,8 @@ public class AlbumsController {
      */
     @Operation(summary = "Create Album")
     @PostMapping
-    public ResponseEntity<?> createAlbum(@PathVariable Long profileId, @RequestBody CreateAlbumResource resource) {
-        CreateAlbumCommand command = CreateAlbumCommandFromResourceAssembler.toCommandFromResource(profileId, resource);
+    public ResponseEntity<?> createAlbum(@RequestBody CreateAlbumResource resource) {
+        CreateAlbumCommand command = CreateAlbumCommandFromResourceAssembler.toCommandFromResource(resource);
         var albumId = albumCommandService.handle(command);
         if (albumId.isEmpty()) return ResponseEntity.badRequest().build();
         var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId.get()));
@@ -56,7 +61,7 @@ public class AlbumsController {
      */
     @Operation(summary = "Get Albums by Profile")
     @GetMapping
-    public ResponseEntity<List<AlbumResource>> getAlbumsByProfile(@PathVariable Long profileId) {
+    public ResponseEntity<List<AlbumResource>> getAlbumsByProfile(@RequestParam Long profileId) {
         var albums = albumQueryService.handle(new GetAlbumsByProfileIdQuery(profileId));
         var resources = albums.stream().map(AlbumResourceFromEntityAssembler::toResourceFromEntity).toList();
         return ResponseEntity.ok(resources);
@@ -67,13 +72,13 @@ public class AlbumsController {
      */
     @Operation(summary = "Get Album")
     @GetMapping("/{albumId}")
-    public ResponseEntity<?> getAlbum(@PathVariable Long profileId, @PathVariable Long albumId) {
+    public ResponseEntity<?> getAlbum(@PathVariable Long albumId) {
         var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
-        return album.map(value ->
-                        value.getProfile().getId().equals(profileId)
-                                ? ResponseEntity.ok(AlbumResourceFromEntityAssembler.toResourceFromEntity(value))
-                                : ResponseEntity.status(HttpStatus.FORBIDDEN).build())
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return albumQueryService.handle(new GetAlbumByIdQuery(albumId))
+                .map(value -> ResponseEntity.ok(
+                        AlbumResourceFromEntityAssembler.toResourceFromEntity(value)
+                ))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -81,18 +86,23 @@ public class AlbumsController {
      */
     @Operation(summary = "Update Album")
     @PutMapping("/{albumId}")
-    public ResponseEntity<?> updateAlbum(@PathVariable Long profileId, @PathVariable Long albumId,
+    public ResponseEntity<?> updateAlbum(@PathVariable Long albumId,
                                          @RequestBody CreateAlbumResource resource) {
+        List<Photo> photos = resource.photos() != null
+                ? resource.photos().stream()
+                .map(p -> new Photo(p.photoUrl(), p.photoPublicId()))
+                .toList()
+                : List.of();
         var command = new UpdateAlbumCommand(
                 albumId,
                 resource.title(),
                 resource.description(),
-                resource.photos()
+                photos
         );
         albumCommandService.handle(command);
         var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
         return album.map(value ->
-                        value.getProfile().getId().equals(profileId)
+                        value.getProfile().getId().equals(resource.profileId())
                                 ? ResponseEntity.ok(AlbumResourceFromEntityAssembler.toResourceFromEntity(value))
                                 : ResponseEntity.status(HttpStatus.FORBIDDEN).build())
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -103,13 +113,40 @@ public class AlbumsController {
      */
     @Operation(summary = "Delete Album")
     @DeleteMapping("/{albumId}")
-    public ResponseEntity<?> deleteAlbum(@PathVariable Long profileId, @PathVariable Long albumId) {
+    public ResponseEntity<?> deleteAlbum(@PathVariable Long albumId) {
         var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
         if (album.isEmpty()) return ResponseEntity.notFound().build();
-        if (!album.get().getProfile().getId().equals(profileId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
         albumCommandService.deleteById(albumId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message","Album has been deleted successfully"));
     }
+
+
+    @PostMapping("/{albumId}/photos")
+    public ResponseEntity<?> addPhoto(
+            @PathVariable Long albumId,
+            @RequestBody CreatePhotoResource resource
+    ) {
+        var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
+        if (album.isEmpty()) return ResponseEntity.notFound().build();
+
+        var createPhotoCommand = new CreatePhotoInAlbumCommand(albumId,resource.photoUrl(),resource.photoPublicId());
+
+        albumCommandService.handle(createPhotoCommand);
+
+        return ResponseEntity.ok(Map.of("message","Photo created successfully"));
+    }
+
+    @DeleteMapping("/{albumId}/photos/{publicId}")
+    public ResponseEntity<?> deletePhoto(@PathVariable Long albumId, @PathVariable String publicId) {
+        var album = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
+        if (album.isEmpty()) return ResponseEntity.notFound().build();
+
+        var deletePhotoCommand = new DeletePhotoFromAlbumCommand(albumId,publicId);
+        albumCommandService.handle(deletePhotoCommand);
+
+        //var updatedAlbum = albumQueryService.handle(new GetAlbumByIdQuery(albumId));
+
+        return ResponseEntity.ok(Map.of("message","Photo deleted successfully"));
+    }
+
 }

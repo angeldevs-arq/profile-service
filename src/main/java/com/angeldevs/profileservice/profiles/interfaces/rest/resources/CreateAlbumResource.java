@@ -1,5 +1,7 @@
 package com.angeldevs.profileservice.profiles.interfaces.rest.resources;
 
+import java.util.List;
+
 /**
  * Resource to create an album.
  *
@@ -8,5 +10,7 @@ package com.angeldevs.profileservice.profiles.interfaces.rest.resources;
  * @param description album description
  * @param photos list of photo URLs
  */
-public record CreateAlbumResource(Long profileId, String title, String description, java.util.List<String> photos) {
+/*public record CreateAlbumResource(Long profileId, String title, String description, List<PhotoResource> photos) {
+}*/
+public record CreateAlbumResource(Long profileId, String title, String description, List<PhotoResource> photos) {
 }
