@@ -22,7 +22,6 @@ import java.util.List;
 /**
  * REST controller for service catalog management.
  */
-@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping(value = "/api/v1/{profileId}/service-catalogs", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Service Catalogs", description = "Service Catalog Management Endpoints")

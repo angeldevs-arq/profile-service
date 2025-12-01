@@ -27,7 +27,6 @@ import java.util.Map;
 /**
  * REST controller for album management.
  */
-@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping(value = "/api/v1/albums", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Albums", description = "Album Management Endpoints")

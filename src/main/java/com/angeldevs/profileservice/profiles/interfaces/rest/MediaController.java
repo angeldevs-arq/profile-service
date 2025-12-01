@@ -67,13 +67,13 @@ public class MediaController {
         return ResponseEntity.ok(mediaResource);
     }
 
-    @DeleteMapping(value = "delete/{publicId}")
+    @DeleteMapping(value = "delete")
     @Operation(summary = "Delete image", description = "Delete image from cloudinary using publicId")
     @ApiResponses(value ={
             @ApiResponse(responseCode = "200", description = "Image deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Cannot delete image")
     })
-    public ResponseEntity<?> deleteImage(@PathVariable("publicId") String publicId){
+    public ResponseEntity<?> deleteImage(@RequestParam("publicId") String publicId){
         var deleted = cloudinaryService.deleteImage(publicId);
         return deleted ? ResponseEntity.ok(Map.of("message","Image deleted successfully")) : ResponseEntity.badRequest().build();
     }
